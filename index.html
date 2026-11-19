@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Partner Order Label</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  @page { size: 4in 2in; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { font-family: Arial, Helvetica, sans-serif; color: #000; background: #e9ecef; }
+  .label {
+    width: 4in; height: 2in; padding: 0.09in 0.12in; background: #fff;
+    display: grid; grid-template-rows: auto auto 1fr auto; row-gap: 0.03in; overflow: hidden;
+  }
+  .top { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #000; padding-bottom: 0.03in; }
+  .partner { font-size: 15pt; font-weight: 700; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 2.5in; }
+  .inv { font-size: 8pt; white-space: nowrap; }
+  .k { font-size: 6.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #222; }
+  .manifest .v { font-size: 20pt; font-weight: 700; font-family: "Courier New", monospace; letter-spacing: .02em; }
+  .dispo .v { font-size: 12pt; font-weight: 700; line-height: 1.1; max-height: 0.36in; overflow: hidden; }
+  .dispo .lic { font-size: 9.5pt; font-family: "Courier New", monospace; font-weight: 700; margin-top: 0.01in; }
+  .gf { display: flex; align-items: flex-end; gap: 0.06in; border-top: 1px solid #000; padding-top: 0.04in; }
+  .gf .line { flex: 1; border-bottom: 1.5px solid #000; height: 0.2in; font-size: 11pt; font-weight: 700; font-family: "Courier New", monospace; }
+  .bar { width: 4in; margin: 0 0 12px; font-size: 13px; padding: 10px; background: #fff; border-radius: 6px; }
+  .bar button { font-size: 14px; padding: 6px 14px; cursor: pointer; margin-right: 8px; }
+  .wrap { padding: 20px; }
+  @media print { html, body { background: #fff; } .bar { display: none; } .wrap { padding: 0; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <button onclick="window.print()">Print label</button>
+    Printer: 4 × 2 in paper, margins <b>None</b>, scale <b>100%</b>.
+  </div>
+  <div class="label">
+    <div class="top">
+      <div class="partner" id="partner">—</div>
+      <div class="inv"><span class="k">Partner Inv #</span> <span id="inv"></span></div>
+    </div>
+    <div class="manifest">
+      <div class="k">Manifest # to Modern</div><div class="v" id="manifest">—</div>
+    </div>
+    <div class="dispo">
+      <div class="k">Ship to</div>
+      <div class="v" id="dispo">—</div>
+      <div class="lic">OMMA <span id="lic">—</span></div>
+    </div>
+    <div class="gf"><span class="k">GF Invoice #</span><div class="line" id="gf"></div></div>
+  </div>
+</div>
+<script>
+  // Data arrives after "#" from the monday Print Label link: partner~manifest~dispensary~license~partnerInvoice[~gfInvoice]
+  // (after "#" so it never leaves the browser)
+  var raw = location.hash.slice(1);
+  try { raw = decodeURIComponent(raw); } catch (e) { raw = raw.replace(/%20/g, " "); }
+  var f = raw.split("~").map(function (s) { return (s || "").trim(); });
+  function set(id, v) { if (v) document.getElementById(id).textContent = v; }
+  set("partner", f[0]); set("manifest", f[1]); set("dispo", f[2]); set("lic", f[3]); set("inv", f[4]); set("gf", f[5]);
+  document.title = "Label " + (f[1] || "");
+</script>
+</body>
+</html>
